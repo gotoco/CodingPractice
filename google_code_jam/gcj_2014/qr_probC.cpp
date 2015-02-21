@@ -16,6 +16,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <string.h>
 
 using namespace std;
 
@@ -122,14 +123,17 @@ void print_map(int c, int r, int m, int ii)
                     for(int i=0; i<c; i++)
                         {
                             if(mc>0){
-                                ans[j][i] = '*';
-                                mc--;
+                                if(ans[j][i] != '*') {
+                                    ans[j][i] = '*';
+                                    mc--;
+                                } else{ }
+
                                 if(mc==0 && i==c-2){
                                     ans[j][i] = '.';
-                                    ans[r-3][0] = '*';
+                                    ans[j+1][0] = '*';
                                 }
                             } else {
-                                ans[j][i] = '.';
+                                if(ans[j][i] == 0) ans[j][i] = '.';
                             }
                         }
 
@@ -137,8 +141,11 @@ void print_map(int c, int r, int m, int ii)
                     for(int j=r-3; j<r; j++)
                         {
                             if(mc>0){
-                                ans[j][i] = '*';
-                                mc--;
+                                if(ans[j][i] != '*') {
+                                    ans[j][i] = '*';
+                                    mc--;
+                                } else{ }
+
                                 if(mc==0 && j==r-2){
                                     ans[j][i] = '.';
                                     ans[r-3][i+1] = '*';
@@ -148,7 +155,6 @@ void print_map(int c, int r, int m, int ii)
                             }
                         }
                     ans[r-1][c-1] = 'c';
-
             }
         }
 
@@ -160,61 +166,61 @@ void print_map(int c, int r, int m, int ii)
     }
 }
 
-//int main() {
-//    int cas, r, c, m, pos, v;
-//    scanf("%d", &cas);
-//    for (int ii=0; ii<cas; ii++) {
-//        scanf("%d%d%d", &r, &c, &m);
-//        memset(ans, 0, sizeof(ans));
-//        pos = 1;
-//        if (r == 1) {
-//            for(int i=0;i<m;i++)ans[0][i]='*';
-//            for(int i=m;i<c;i++)ans[0][i]='.';
-//            ans[0][c-1] = 'c';
-//        } else if (c==1) {
-//            for(int i=0;i<m;i++)ans[i][0]='*';
-//            for(int i=m;i<r;i++)ans[i][0]='.';
-//            ans[r-1][0] = 'c';
-//        } else if (m == r * c - 1) {
-//            for(int i=0; i<r; i++) for(int j=0; j<c; j++)ans[i][j] = i==0&&j==0?'c':'*';
-//        } else if (r == 2) {
-//            if (r*c-m == 2 || m%2!=0) pos = 0;
-//            else{
-//                for(int i=0; i<r; i++) for(int j=0; j<c; j++)ans[i][j] = j<m/2?'*':'.';
-//                ans[0][c-1] = 'c';
-//            }
-//        } else if (c == 2) {
-//            if (r*c-m == 2 || m%2!=0) pos = 0;
-//            else {
-//                for(int i=0; i<r; i++) for(int j=0; j<c; j++)ans[i][j] = i<m/2?'*':'.';
-//                ans[r-1][0] = 'c';
-//            }
-//        } else {
-//            v = r*c - m;
-//            if (v == 2 || v == 3 || v == 5 || v == 7) pos = 0;
-//            else{
-//                if (v / c <= 2) {
-//                    for(int i=0; i<r; i++) for(int j=0; j<c; j++)
-//                            ans[i][j] = i<3 && j*3+i<v?'.':'*';
-//                    if (v%3 == 1) {ans[1][v/3] = '.'; ans[2][v/3-1] = '*';}
-//                    ans[0][0] = 'c';
-//                } else {
-//                    for(int i=0; i<r; i++) for(int j=0; j<c; j++)
-//                            ans[i][j] = i*c+j<v?'.':'*';
-//                    if (v % c == 1) {
-//                        ans[v/c][1] = '.'; ans[v/c-1][c-1] = '*';
-//                    }
-//                    ans[0][0] = 'c';
-//                }
-//            }
-//        }
-//        if (pos) {
-//            printf("Case #%d:\n", ii+1);
-//            for(int i=0; i<r; i++) puts(ans[i]);
-//        } else {
-//            printf("Case #%d:\nImpossible\n", ii+1);
-//
-//        }
-//    }
-//    return 0;
-//}
+int main2() {
+    int cas, r, c, m, pos, v;
+    scanf("%d", &cas);
+    for (int ii=0; ii<cas; ii++) {
+        scanf("%d%d%d", &r, &c, &m);
+        memset(ans, 0, sizeof(ans));
+        pos = 1;
+        if (r == 1) {
+            for(int i=0;i<m;i++)ans[0][i]='*';
+            for(int i=m;i<c;i++)ans[0][i]='.';
+            ans[0][c-1] = 'c';
+        } else if (c==1) {
+            for(int i=0;i<m;i++)ans[i][0]='*';
+            for(int i=m;i<r;i++)ans[i][0]='.';
+            ans[r-1][0] = 'c';
+        } else if (m == r * c - 1) {
+            for(int i=0; i<r; i++) for(int j=0; j<c; j++)ans[i][j] = i==0&&j==0?'c':'*';
+        } else if (r == 2) {
+            if (r*c-m == 2 || m%2!=0) pos = 0;
+            else{
+                for(int i=0; i<r; i++) for(int j=0; j<c; j++)ans[i][j] = j<m/2?'*':'.';
+                ans[0][c-1] = 'c';
+            }
+        } else if (c == 2) {
+            if (r*c-m == 2 || m%2!=0) pos = 0;
+            else {
+                for(int i=0; i<r; i++) for(int j=0; j<c; j++)ans[i][j] = i<m/2?'*':'.';
+                ans[r-1][0] = 'c';
+            }
+        } else {
+            v = r*c - m;
+            if (v == 2 || v == 3 || v == 5 || v == 7) pos = 0;
+            else{
+                if (v / c <= 2) {
+                    for(int i=0; i<r; i++) for(int j=0; j<c; j++)
+                            ans[i][j] = i<3 && j*3+i<v?'.':'*';
+                    if (v%3 == 1) {ans[1][v/3] = '.'; ans[2][v/3-1] = '*';}
+                    ans[0][0] = 'c';
+                } else {
+                    for(int i=0; i<r; i++) for(int j=0; j<c; j++)
+                            ans[i][j] = i*c+j<v?'.':'*';
+                    if (v % c == 1) {
+                        ans[v/c][1] = '.'; ans[v/c-1][c-1] = '*';
+                    }
+                    ans[0][0] = 'c';
+                }
+            }
+        }
+        if (pos) {
+            printf("Case #%d:\n", ii+1);
+            for(int i=0; i<r; i++) puts(ans[i]);
+        } else {
+            printf("Case #%d:\nImpossible\n", ii+1);
+
+        }
+    }
+    return 0;
+}
