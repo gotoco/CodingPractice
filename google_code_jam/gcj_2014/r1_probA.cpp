@@ -49,8 +49,8 @@ int main() {
 
         }
 
-        if(globalmin == INF) cout << " NOT POSSIBLE ";
-        else cout << globalmin;
+        if(globalmin == INF) cout << "NOT POSSIBLE " << endl;
+        else cout << globalmin << endl;
     }
 }
 
@@ -82,7 +82,9 @@ string applyMask(string flow, string mask)
 
     for(int i=0; i<n; i++){
         if(mask[i] == '1'){
-            buffer[i] = '1';
+            if(flow [i] == '1')
+                buffer[i] = '0';
+            else buffer[i] = '1';
         } else if(mask[i] == '0'){
             buffer[i] = '0';
         } else {
