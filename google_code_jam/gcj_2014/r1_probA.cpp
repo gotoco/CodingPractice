@@ -11,10 +11,19 @@ using namespace std;
 string createMask(string device, string flow, unsigned int & flips);
 string applyMask(string flow, string mask);
 
+int main2();
+int solution();
+
 int main() {
 
+    solution();
+}
+
+int solution()
+{
     int T, prob=1;
-    for (cin >> T; T--;) {
+    cin >> T;
+    for (int i=T; i>0; i--) {
         unsigned int globalmin = INF;
         cout << "Case #" << prob++ << ": ";
 
@@ -56,7 +65,7 @@ int main() {
 
 string createMask(string device, string flow, unsigned int & flips)
 {
-    char * mask = (char*)malloc(device.length());
+    char * mask = (char*)malloc(device.length()+1);
     unsigned long n = device.length();
 
     for(int i=0; i<n; i++){
@@ -70,6 +79,7 @@ string createMask(string device, string flow, unsigned int & flips)
             flips++;
         }
     }
+    mask[n] = '\0';
     string result = string(mask);
     free((void*) mask);
     return result;
@@ -86,13 +96,48 @@ string applyMask(string flow, string mask)
                 buffer[i] = '0';
             else buffer[i] = '1';
         } else if(mask[i] == '0'){
-            buffer[i] = '0';
+            if(flow [i] == '1')
+                buffer[i] = '0';
+            else buffer[i] = '1';
         } else {
             buffer[i] = flow [i];
         }
     }
-
+    mask[n] = '\0';
     string result = string(buffer);
     free((void*) buffer);
     return result;
+}
+
+int main2() {
+    int T, prob=1;
+    for (cin >> T; T--;) {
+        cout << "Case #" << prob++ << ": ";
+
+        int N, L;
+        cin >> N >> L;
+        vector<string> os(N), ds(N);
+        for (int i = 0; i < N; i++) cin >> os[i];
+        for (int i = 0; i < N; i++) cin >> ds[i];
+        int ret = 1000000;
+        sort(ds.begin(), ds.end());
+        for (int i = 0; i < N; i++) {
+            vector<string> v = os;
+            int cur = 0;
+            for (int j = 0; j < L; j++) if (v[0][j] != ds[i][j]) {
+                    for (int k = 0; k < N; k++) v[k][j] ^= 1;
+                    cur++;
+                }
+            if (cur >= ret) continue;
+            sort(v.begin(), v.end());
+            if (v == ds) ret = cur;
+        }
+
+        if (ret == 1000000) {
+            cout << "NOT POSSIBLE";
+        } else {
+            cout << ret;
+        }
+        cout << endl;
+    }
 }
