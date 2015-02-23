@@ -12,14 +12,14 @@ string createMask(string device, string flow, unsigned int & flips);
 string applyMask(string flow, string mask);
 
 int main2();
-int solution();
+int chargingChaos();
 
 int main() {
 
-    solution();
+    chargingChaos();
 }
 
-int solution()
+int chargingChaos()
 {
     int T, prob=1;
     cin >> T;
