@@ -46,21 +46,63 @@ typedef long long LL;
 // a zamiast second - ND
 #define ND second
 
-void  fullBinaryTree(void);
+typedef struct node {
+    node * left;
+    node * right;
+    int val;
+} root;
+
+
+void  fullBinaryTree(int tc);
+int recursiveSearch(root * root);
 
 int main(){
-    fullBinaryTree();
+
+    int N;
+    scanf("%d", &N);
+    REP(tc, N)
+        fullBinaryTree(tc+1);
+
 }
 
-struct vertex {
-
-};
-
-void fullBinaryTree(void)
+void fullBinaryTree(int tc)
 {
     int N;
-    cin >> N;
-    REP(tc, N){
+    scanf("%d", &N);
+    node * nodes = (node*)calloc(N+1, sizeof(node));
+    REP(l, N-1){
+        int n1, n2;
+        scanf("%d", &n1); scanf("%d", &n2);
+        nodes[n1].val = n1;
+        nodes[n2].val = n2;
 
+        if(n1<n2){
+            if(nodes[n1].left==NULL)
+                nodes[n1].left = &nodes[n2];
+            else
+                nodes[n1].right = &nodes[n2];
+
+        } else {
+            if(nodes[n2].left==NULL)
+                nodes[n2].left = &nodes[n1];
+            else
+                nodes[n2].right = &nodes[n1];
+        }
     }
+    node * root = &nodes[1];
+    int result = recursiveSearch(root);
+
+    printf("Case #%d: %d \n\r", tc, result);
+    free(nodes);
 }
+
+int recursiveSearch(root * root)
+{
+    if(root->left == NULL && root->right == NULL) return 0;
+    if(root->left != NULL && root->right != NULL){
+         return ( recursiveSearch(root->left) + recursiveSearch(root->right) );
+    }
+    else
+        return 1;
+}
+
