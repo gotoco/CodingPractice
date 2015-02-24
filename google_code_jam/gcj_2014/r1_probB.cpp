@@ -46,63 +46,45 @@ typedef long long LL;
 // a zamiast second - ND
 #define ND second
 
-typedef struct node {
-    node * left;
-    node * right;
-    int val;
-} root;
+template<class V, class E> struct Graph {
 
-
-void  fullBinaryTree(int tc);
-int recursiveSearch(root * root);
+    struct Ed : E {
+        int v;
+        Ed(E p, int w) : E(p), v(w) {}
+    };
+    // Typ wierzcholka (Ve) dziedziczy po typie zawierajacym dodatkowe informacje
+    // z nim zwiazane (V) oraz po wektorze krawedzi.
+    struct Ve : V, vector<Ed> {};
+    // Wektor wierzcholkow w grafie
+    vector<Ve> g;
+    // Konstruktor grafu - przyjmuje jako parametr liczbe wierzcholkow
+    Graph(int n=0) : g(n) {}
+    // Funkcja dodajaca do grafu nowa krawedz nieskierowana, laczaca wierzcholki b i e oraz zawierajaca dodatkowe informacje okreslone przez zmienna d.
+    void EdgeU(int b, int e, E d = E()) {
+        Ed eg(d,e); eg.rev=SIZE(g[e])+(b==e); g[b].PB(eg);
+        eg.rev=SIZE(g[eg.v=b])-1; g[e].PB(eg);
+    }
+};
+// Krawedzie grafu nieskierowanego wymagaja dodatkowego pola int rev
+struct Ve {
+    int rev;
+};
+// Wzbogacenie wierzcholkow przechowujace wynik generowany przez algorytm DFS
+struct Vs {
+    int d, f, s;
+};
 
 int main(){
 
-    int N;
-    scanf("%d", &N);
-    REP(tc, N)
-        fullBinaryTree(tc+1);
-
-}
-
-void fullBinaryTree(int tc)
-{
-    int N;
-    scanf("%d", &N);
-    node * nodes = (node*)calloc(N+1, sizeof(node));
-    REP(l, N-1){
-        int n1, n2;
-        scanf("%d", &n1); scanf("%d", &n2);
-        nodes[n1].val = n1;
-        nodes[n2].val = n2;
-
-        if(n1<n2){
-            if(nodes[n1].left==NULL)
-                nodes[n1].left = &nodes[n2];
-            else
-                nodes[n1].right = &nodes[n2];
-
-        } else {
-            if(nodes[n2].left==NULL)
-                nodes[n2].left = &nodes[n1];
-            else
-                nodes[n2].right = &nodes[n1];
-        }
+    int n, m, s, b, e;
+    // Wczytaj liczbe wierzcholkow, krawedzi oraz numer wierzcholka startowego
+    cin >> n >> m >> s;
+    // Skonstruuj odpowiedni graf
+    Graph<Vs, Ve> g(n);
+    // Dodaj do grafu wszystkie krawedzie
+    REP(x,m) {
+        cin >> b >> e;
+        g.EdgeU(b, e);
     }
-    node * root = &nodes[1];
-    int result = recursiveSearch(root);
 
-    printf("Case #%d: %d \n\r", tc, result);
-    free(nodes);
 }
-
-int recursiveSearch(root * root)
-{
-    if(root->left == NULL && root->right == NULL) return 0;
-    if(root->left != NULL && root->right != NULL){
-         return ( recursiveSearch(root->left) + recursiveSearch(root->right) );
-    }
-    else
-        return 1;
-}
-
