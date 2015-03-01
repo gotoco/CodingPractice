@@ -47,35 +47,90 @@ template<class V, class E> struct Graph {
         Ed eg(d,e); eg.rev=SIZE(g[e])+(b==e); g[b].PB(eg);
         eg.rev=SIZE(g[eg.v=b])-1; g[e].PB(eg);
     }
+
+    void dsf(int e= -1) {
+        // The 'd' and 'f' represents go-into and exit times from vertex
+        // s is number of father in dfs forest
+        VI st(SIZE(g));
+        int t=-1, i=0, b=0;
+        e == -1 ? e=SIZE(g)-1 : b = e;
+        //Set all vertexes as unchecked
+        REP(x, SIZE(g)) g[x].d = g[x].f = g[x].s = -1;
+
+        //ForEACH vertexes from [b..e] if vertex was not checked..?
+        FOR(s,b,e)
+            if(g[s].d == -1){
+                st[i++] = s;
+                g[s].d = ++t;
+                g[s].f = SIZE(g[s]);
+
+                //While stack is not empty..
+                while(i){
+                    int ss = st[i-1];
+                    if(g[ss].f==0){g[ss].f = ++t; --i;} else {
+                        ss = g[ss][--g[ss].f].v;
+                        if(g[ss].d == -1){
+                            g[ss].s = st[i-1];
+                            g[ss].f = SIZE(g[ss]);
+                            g[st[i++]= ss].d = ++t;
+                            //check if it is fullTree member
+                            if(g[g[ss].s].ft)
+                                g[ss].ft = SIZE(g[ss])-1==0 || SIZE(g[ss])-1==2;
+                            else g[ss].ft = false;
+                        }
+                    }
+                }
+            }
+        if(SIZE(g[e])==2) g[e].ft == true;
+    }
 };
-// Krawedzie grafu nieskierowanego wymagaja dodatkowego pola int rev
+//Undirected graphs edges required rev field
 struct Ve {
     int rev;
 };
-// Wzbogacenie wierzcholkow przechowujace wynik generowany przez algorytm DFS
+// fields to store algorithm DFS results
 struct Vs {
     int d, f, s;
+    bool ft; // is full tree member (has 2 or 0 sons)
 };
+
+int algorithm (int e);
 
 int main(){
 
     int tc = 0; //test cases
     cin >> tc;
     REP(tt,tc) {
-        cout << " Case #: " << tt << endl;
+        cout << " Case #: " << tt << " ";
+        int edges;
+        cin >> edges;
+        int sol = algorithm(edges);
+
+        cout << sol;
     }
 
-//    int n, m, s, b, e;
-//    // Wczytaj liczbe wierzcholkow, krawedzi oraz numer wierzcholka startowego
-//    cin >> n >> m >> s;
-//    // Skonstruuj odpowiedni graf
-//    Graph<Vs, Ve> g(n);
-//    // Dodaj do grafu wszystkie krawedzie
-//    REP(x,m) {
-//        cin >> b >> e;
-//        g.EdgeU(b, e);
-//    }
-//
-//    REP(x, SIZE(g.g)) cout << "Wierzcholek " << x << ": size = " << g.g[x].size() << endl;
+}
 
+Graph<Vs, Ve> constructGraph(int n)
+{
+    Graph<Vs, Ve> g(n);
+    int a,b,e;
+    REP(x,n-1) {
+        cin >> b >> e;
+        g.EdgeU(b-1, e-1);
+    }
+    return g;
+}
+
+int algorithm(int n)
+{
+    Graph<Vs, Ve> tree = constructGraph(n);
+
+    tree.dsf(0);
+
+    REP(x, SIZE(tree.g)){
+        cout << "vertex: " << x << " in-to 'g': " << tree.g[x].d << " exit 'f': " << tree.g[x].f << " dsf father: " << tree.g[x].s << " is FT member? : " << tree.g[x].ft << endl;
+    }
+
+    return tree.g.size();
 }
