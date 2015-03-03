@@ -55,7 +55,7 @@ template<class V, class E> struct Graph {
         int t=-1, i=0, b=0;
         e == -1 ? e=SIZE(g)-1 : b = e;
         //Set all vertexes as unchecked
-        REP(x, SIZE(g)) g[x].d = g[x].f = g[x].s = -1;
+        REP(x, SIZE(g)) {g[x].d = g[x].f = g[x].s = -1 ; g[x].ft = 0; }
 
         //ForEACH vertexes from [b..e] if vertex was not checked..?
         FOR(s,b,e)
@@ -67,21 +67,40 @@ template<class V, class E> struct Graph {
                 //While stack is not empty..
                 while(i){
                     int ss = st[i-1];
-                    if(g[ss].f==0){g[ss].f = ++t; --i;} else {
+                    if(g[ss].f==0){
+                        g[ss].f = ++t;
+                        --i;
+
+                        if( SIZE(g[ss])==1 ) {  //leaf no sons
+                            g[ss].ft = 1;
+                        }
+                        else { //check all connected nodes without father
+                            int a = 0; int b = 0;
+                            int f = g[ss].s;
+                            FOREACH(i, g[ss])
+                            {
+                                if(i->v == f ) continue; //only count subtrees
+
+                                if(a<=g[i->v].ft){b=a; a=g[i->v].ft; }
+                                else{ b = max(b, g[i->v].ft);}
+                            }
+                            if(a>0 && b>0){ //if current has at least two sons
+                                g[ss].ft = a+b+1;
+                            }else {  //if not forgot about them
+                                g[ss].ft = 1;
+                            }
+                        }
+
+                    } else {
                         ss = g[ss][--g[ss].f].v;
                         if(g[ss].d == -1){
                             g[ss].s = st[i-1];
                             g[ss].f = SIZE(g[ss]);
                             g[st[i++]= ss].d = ++t;
-                            //check if it is fullTree member
-                            if(g[g[ss].s].ft)
-                                g[ss].ft = SIZE(g[ss])-1==0 || SIZE(g[ss])-1==2;
-                            else g[ss].ft = false;
                         }
                     }
                 }
             }
-        if(SIZE(g[e])==2) g[e].ft == true;
     }
 };
 //Undirected graphs edges required rev field
@@ -91,7 +110,7 @@ struct Ve {
 // fields to store algorithm DFS results
 struct Vs {
     int d, f, s;
-    bool ft; // is full tree member (has 2 or 0 sons)
+    int ft; // is full tree member (has 2 or 0 sons) //1 - leaf: no sons, 2 - node:2 sons
 };
 
 int algorithm (int e);
@@ -101,12 +120,12 @@ int main(){
     int tc = 0; //test cases
     cin >> tc;
     REP(tt,tc) {
-        cout << " Case #: " << tt << " ";
+        cout << " Case #" << tt+1 << ": ";
         int edges;
         cin >> edges;
         int sol = algorithm(edges);
 
-        cout << sol;
+        cout << edges - sol << endl;
     }
 
 }
@@ -122,15 +141,26 @@ Graph<Vs, Ve> constructGraph(int n)
     return g;
 }
 
+int do_max_spanning_tree(Graph<Vs, Ve> tree, int root_nr)
+{
+
+    tree.g[root_nr].ft = 2;
+    tree.dsf(root_nr);
+
+    return tree.g[root_nr].ft;
+}
+
 int algorithm(int n)
 {
     Graph<Vs, Ve> tree = constructGraph(n);
 
-    tree.dsf(0);
-
+    int max_tree = 0;
     REP(x, SIZE(tree.g)){
-        cout << "vertex: " << x << " in-to 'g': " << tree.g[x].d << " exit 'f': " << tree.g[x].f << " dsf father: " << tree.g[x].s << " is FT member? : " << tree.g[x].ft << endl;
+        int tmp = do_max_spanning_tree(tree, x);
+//        cout << "dla drzewa o roocie x: " << x << " rozmiar spanning tree = " << tmp << endl;
+        max_tree = max(max_tree, tmp);
     }
 
-    return tree.g.size();
+    return max_tree;
 }
+
