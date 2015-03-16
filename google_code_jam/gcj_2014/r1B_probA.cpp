@@ -63,7 +63,6 @@ vector<int> calculate_median(vector<string> s, char * pattern, int pattern_lengt
     for(int i=0; i<s.size(); i++)
         freq_map[i] = (int*)calloc(sizeof(int), pattern_length);
 
-
     for(int n=0; n<s.size(); n++){
         string t = s[n];
         int ii = 0;
@@ -86,17 +85,14 @@ vector<int> calculate_median(vector<string> s, char * pattern, int pattern_lengt
 
         if(s.size()%2 )
             result.PB(x[s.size()/2]);
-        else{
-            int jeden = x[s.size()/2];
-            int dwa = x[s.size()/2 - 1];
-            int m = (jeden+dwa)/2;
-            result.PB(  m );
-        }
-
+        else
+            result.PB(  (x[s.size()/2]+x[s.size()/2 - 1])/2 );
 
         for(int j=0; j<100; j++) x[j] = 0;
     }
-
+    for(int i=0; i<s.size(); i++)
+        free(freq_map[i]);
+    free(freq_map);
     return result;
 }
 
@@ -108,8 +104,7 @@ int omar_play(vector<string> s)
     pattern[0] = fs[0]; int index=0;
     FOR(i, 1, fs.size()){
         if(pattern[index] != fs[i]) {
-            pattern[index+1] = fs[i];
-            index++;
+            pattern[index++ +1] = fs[i];
         }
     }
     vector<int> median = calculate_median(s, pattern, index);
@@ -130,9 +125,8 @@ int omar_play(vector<string> s)
             pattern_cnt[x] +=cnt;
         }
 
-        if(ii != c.size()){
+        if(ii != c.size())
             return -1;
-        }
     }
 
     for(int i=0; i<s.size(); i++){
