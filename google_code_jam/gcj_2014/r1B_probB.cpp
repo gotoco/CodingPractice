@@ -7,6 +7,9 @@
 #include <strings.h>
 #include <math.h>
 
+//#include <ctime.h>
+#include <time.h>
+
 using namespace std;
 
 //Two of the most frequently used typical of long names, make life easier
@@ -36,21 +39,30 @@ typedef long long LL;
 unsigned long dynamic_pp_solution(unsigned int a, unsigned int b, unsigned int k);
 unsigned long brute_force(unsigned int a, unsigned int b, unsigned int k);
 
+long count_pairs(long i, long lessA, long lessB, long lessK, long A, long B, long K);
+int xSize = sizeof(long);
+int ySize = sizeof(long);
+int offset( int x, int y, int z ) { return ( z * xSize * ySize ) + ( y * xSize ) + x ; }
+
 int main() {
 
 
     int tt; cin >> tt;
 
     REP(c, tt){
+
         unsigned int a, b, k; cin >> a; cin >> b; cin>>k;
         cout << "Case #" << c+1 << ": " ;
 
-        cout << "  BF : " << brute_force(a, b, k) << endl;
-
+        long t1 = time(NULL) ;
         unsigned long result = dynamic_pp_solution(a, b, k);
 
-        cout << " DP : " << result;
 
+        long t2 = time(NULL) ;
+
+        cout
+//                << " dt = " << t2-t1 << "  r:  "
+                <<result << endl;
 
     }
 
@@ -66,88 +78,67 @@ unsigned long brute_force(unsigned int a, unsigned int b, unsigned int k)
                 result++; row++;
             }
         }
-        cout << "row " << i << "  : " << row << endl;
     }
 
     return result;
 }
+long dp_cache[32][2][2][2];
+
+void clear_cache(){
+    for(int i=0; i<32; i++){
+        for(int j=0; j<2; j++)
+            for(int k=0; k<2; k++)
+                for(int l=0; l<2; l++)
+                    dp_cache[i][j][k][l] = -1;
+    }
+}
 
 unsigned long dynamic_pp_solution(unsigned int a, unsigned int b, unsigned int k)
 {
-    unsigned int result = 0;
+    unsigned int max = std::max(a, b);
+    max = std::max(max, k);
 
-    if(k > a || k > b) return 0;
-    int C, c;
-    if(a > b){
-        C = a; c = b;
-    }else{
-        C = b; c = a;
+    long i_bytes = 0;
+    int kk = max;
+    while(kk > 0){
+        kk /= 2; i_bytes++;
     }
+    clear_cache();
 
-    for(int i=0; i<c; i++){  //iteruje po mniejszej liczbie
-        VI va;
-        long tmp_result = 0;
-
-        int pow = 0;
-        unsigned int ii = i;
-        while(ii>0){
-            if(ii%2 == 1) va.PB(  std::pow (2, pow) );
-            pow++;
-            ii /= 2;
-        }
-
-        int smaller_than_k_cnt = 0;
-        int bigger_than_k_cnt = 0;
-
-        FOREACH(it, va)
-            if(*it<k) smaller_than_k_cnt++;
-            else bigger_than_k_cnt++;
-
-        if(bigger_than_k_cnt > 0)
-            tmp_result += std::pow(2, smaller_than_k_cnt) + std::pow(2, bigger_than_k_cnt);
-        else{
-            int sum = 0;
-            FOREACH(it, va)
-                if(*it<k) sum+= *it;
-
-            if(sum >= k) tmp_result += (sum-k+1);
-        }
-
-        for(int j=c; j<C; j++)
-            if((j & i) >= k)
-                tmp_result++;
-
-        result+= tmp_result;
-    }
-
-    return a*b-result;
+    return count_pairs(i_bytes, 0, 0, 0, a, b, k);
 }
 
-//unsigned long dynamic_pp_solution(unsigned int a, unsigned int b, unsigned int k)
-//{
-//    unsigned int result = 0;
-//    VI vi;
-//
-//    if(k > a || k > b) return 0;
-//
-//    unsigned int kk = k;
-//    int pow = 0;
-//    while(kk>0 && std::pow (2, pow) < b){
-//        if(kk%2 == 0) vi.PB(  std::pow (2, pow) );
-//        pow++;
-//        kk /= 2;
-//    }
-//
-//    int pow2 = 0;
-//    int tmp = a > b ? a : b;
-//    tmp--;
-//    int rest = tmp >> pow;
-//    while(rest > 0 ){
-//        rest /= 2;
-//        pow2 ++;
-//    }
-//
-//    int cases = std::pow (2, pow2 + vi.size()) ;
-//
-//    return (unsigned long)a * b - cases;
-//}
+inline long getBit(long num, long i) { return (num >> i) & 1; }
+
+long count_pairs(long i, long lessA, long lessB, long lessK, long A, long B, long K)
+{
+    if(i == -1)
+        return (lessA && lessB && lessK);
+
+    if(dp_cache[i][lessA][lessB][lessK] != -1)
+        return dp_cache[i][lessA][lessB][lessK];
+
+    long count = 0;
+    long maxA = lessA || getBit(A, i) == 1;
+    long maxB = lessB || getBit(B, i) == 1;
+    long maxK = lessK || getBit(K, i) == 1;
+
+    //use calue 0 for a, b and k with is always possible
+    count = count_pairs(i-1, maxA, maxB, maxK, A, B, K);
+
+    if(maxA){
+        count += count_pairs(i-1, lessA, maxB, maxK, A, B, K);
+    }
+
+    if(maxB){
+        count += count_pairs(i-1, maxA, lessB, maxK, A, B, K);
+    }
+
+    if(maxK && maxA && maxB){
+        count += count_pairs(i-1, lessA, lessB, lessK, A, B, K);
+    }
+
+    dp_cache[i][lessA][lessB][lessK] = count;
+
+    return count;
+}
