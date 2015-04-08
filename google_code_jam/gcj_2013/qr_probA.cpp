@@ -62,7 +62,6 @@ enum tick_tack_result tick_tack_game(VI board);
 VI get_board_from_input();
 
 int main(){
-    string eol_terminator;
     int tT;
     scanf("%d", &tT);
 
@@ -76,13 +75,10 @@ int main(){
             case(draw) : cout << "Draw\n\r"; break;
             case(not_complete) : cout << "Game has not completed\n\r"; break;
         }
-
-//        cin >> eol_terminator;
     }
 
     return 0l;
 }
-
 
 VI get_board_from_input()
 {
@@ -98,27 +94,20 @@ VI get_board_from_input()
     return r;
 }
 
-
 enum tick_tack_result tick_tack_game(VI b)
 {
     //FOR each column
     FOR(i, 0, 3){
         int sum = (b[i]+b[i+4]+b[i+8]+b[i+12]);
 
-        if(sum==X_win || sum==XT_win )
-            return x_won;
-        else if (sum==O_win || sum==OT_win)
-            return o_won;
+        IF_SUM_MATCH( sum );
     }
 
     //FOR each row
     for(int i=0; i<16; i+=4){
         int sum = (b[i]+b[i+1]+b[i+2]+b[i+3]);
 
-        if(sum==X_win || sum==XT_win )
-            return x_won;
-        else if (sum==O_win || sum==OT_win)
-            return o_won;
+        IF_SUM_MATCH( sum );
     }
     //diagonals
     int sum_d1 = b[0] + b[4+1] + b[8+2] + b[15];
@@ -128,6 +117,6 @@ enum tick_tack_result tick_tack_game(VI b)
 
     //Else check if is empty place:
     FOREACH(i, b) if(*i == dot) return not_complete;
-
+    //last option no winner
     return draw;
 }
