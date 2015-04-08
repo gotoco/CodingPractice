@@ -61,7 +61,7 @@ int main() {
         long t2 = time(NULL) ;
 
         cout
-//                << " dt = " << t2-t1 << "  r:  "
+                << " dt = " << t2-t1 << "  r:  "
                 <<result << endl;
 
     }
@@ -115,8 +115,8 @@ long count_pairs(long i, long lessA, long lessB, long lessK, long A, long B, lon
     if(i == -1)
         return (lessA && lessB && lessK);
 
-    if(dp_cache[i][lessA][lessB][lessK] != -1)
-        return dp_cache[i][lessA][lessB][lessK];
+//    if(dp_cache[i][lessA][lessB][lessK] != -1)
+//        return dp_cache[i][lessA][lessB][lessK];
 
     long count = 0;
     long maxA = lessA || getBit(A, i) == 1;
