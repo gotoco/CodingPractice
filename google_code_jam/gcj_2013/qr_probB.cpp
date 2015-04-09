@@ -74,7 +74,7 @@ int main()
 
     REP(c, T){
         int xx, yy;
-        cin >> xx; cin >> yy; cleanup_space();
+        cin >> yy; cin >> xx; cleanup_space();
 
         prepare_lawn(xx, yy);
 
@@ -103,7 +103,8 @@ inline void pour_it_out(int x_i, int y_i, int xx, int yy){
         return ;
 
     vector <pair<int, int>> s; //stack
-    s.PB(std::make_pair(x_i, y_i));VISIT(x_i, y_i);
+    VISIT(x_i, y_i);
+    s.PB(std::make_pair(x_i, y_i));
 
     while(!s.empty()){
         pair<int, int> e = s.LT;
@@ -111,22 +112,22 @@ inline void pour_it_out(int x_i, int y_i, int xx, int yy){
         int upp_x = e.x_ ; int upp_y = e.y_-1;
         if(IS_IN_BOUNDS(upp_x, upp_y, xx, yy) && IS_NOT_VISITED(upp_x, upp_y) ){
             VISIT(upp_x, upp_y);
-            s.PB(std::make_pair(upp_x, upp_y));
+            s.PB(std::make_pair(upp_y, upp_x));
         }
         int dow_x = e.x_; int dow_y = e.y_+1;
         if(IS_IN_BOUNDS(dow_x, dow_y, xx, yy) && IS_NOT_VISITED(dow_x, dow_y)){
             VISIT(dow_x, dow_y);
-            s.PB(std::make_pair(dow_x, dow_y));
+            s.PB(std::make_pair(dow_y, dow_x));
         }
         int l_x = e.x_-1; int l_y = e.y_;
         if(IS_IN_BOUNDS(l_x, l_y, xx, yy) && IS_NOT_VISITED(l_x, l_y)){
             VISIT(l_x, l_y);
-            s.PB(std::make_pair(l_x, l_y));
+            s.PB(std::make_pair(l_y, l_x));
         }
         int r_x = e.x_+1; int r_y = e.y_;
         if(IS_IN_BOUNDS(r_x, r_y, xx, yy) && IS_NOT_VISITED(r_x, r_y)){
             VISIT(r_x, r_y);
-            s.PB(std::make_pair(r_x, r_y));
+            s.PB(std::make_pair(r_y, r_x));
         }
 
         if(s_size == s.size())
