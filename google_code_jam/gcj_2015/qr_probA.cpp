@@ -37,52 +37,42 @@ typedef long long LL;
 #define ND second()
 #define LT back()
 
-#define P_V_B     1001
-#define P_V     1000
+//int count_standing(string ovations);
+int fast_sol(int total, string s);
 
-unsigned int p_numb [P_V_B];
+int main() {
 
-inline void clean(){
-    FOR(i, 0, P_V)
-        p_numb[i] = 0;
-}
+    int TT; cin >> TT;
 
-int main(){
+    REP(t, TT){
+        cout << "Case #" << t+1 << ": " ;
+        int n; cin>>n;
+        string s;
+        cin >> s;
+        int r = fast_sol(n, s);
 
-//        freopen("in", "r", stdin);
-//    freopen("out", "w", stdout);
+        cout << r << endl;
 
-    int TT; cin>>TT;
-
-    REP(x, TT){
-        clean();
-        int plates;
-        cin >> plates;
-
-        REP(i, plates){
-            unsigned int c;
-            cin >> c;
-            p_numb[i]=c;
-        }
-
-    std:sort(p_numb, p_numb+plates, std::greater<int>());
-    int m = p_numb[0];
-    int t = INFINITY;
-
-    FOR(r, 1, m){
-        int move = 0;
-        for(int i=0; i<plates; i++){
-            if(p_numb[i] <= r) break;
-            move += std::ceil((double)p_numb[i]/r -1);
-        }
-        if (move + r < t)
-            t = move + r;
     }
 
 
 
-        cout << "Case #" <<  x+  1 <<": ";
-        cout << t << endl;
+}
+
+int fast_sol(int total, string s){
+    int result = 0, cnt=0;
+
+    for(int i=0; i<s.size()-1; i++){
+        int n_i = s[i]-48;
+
+        if(n_i+cnt > i){
+            cnt+=n_i;
+        } else {
+            cnt++;
+            result++;
+        }
     }
 
+    return result;
 }
+

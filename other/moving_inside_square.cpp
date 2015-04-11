@@ -43,13 +43,13 @@ struct m2{
 };
 
 
-m2 space [10][10];
+m2 space [100][100];
 
 bool is_possible(int x_s, int y_s);
 
 inline void cleanup_space(){
-    FOR(x, 0, 9)
-        FOR(y, 0, 9){
+    FOR(x, 0, 99)
+        FOR(y, 0, 99){
             space[y][x].mm = 0;
             space[y][x].v = 0;
         }
@@ -90,56 +90,47 @@ int main()
 
 #define IS_IN_BOUNDS(X, Y, XX, YY)      X>=0 && X<XX && Y>=0 && Y<YY
 #define IS_NOT_VISITED(X, Y)            space[Y][X].v == 0
-#define VISIT(X, Y)                     space[Y][X].v = 1
-#define IS_SMALLER(X1, Y1, X2, Y2)       space[Y1][X1].mm >= space[Y2][X2].mm
+#define VISIT(X, Y)                     space[Y][X].v++
+#define IS_SMALLER(X1, Y1, X2, Y2)       space[Y1][X1].mm <= space[Y2][X2].mm
 
 #define y_  first
 #define x_  second
 
-inline void straight_x(int x_i, int y_i, int xx, int yy){
+inline void pour_it_out(int x_i, int y_i, int xx, int yy){
 
+    if(space[y_i][x_i].v)
+        return ;
+
+    vector <pair<int, int>> s; //stack
     VISIT(x_i, y_i);
-    for(int i=1; i<xx; i++){
-        if(IS_SMALLER(i, y_i, i-1, y_i)){
-            VISIT(i, y_i);
-        } else {
-            break;
+    s.PB(std::make_pair(x_i, y_i));
+
+    while(!s.empty()){
+        pair<int, int> e = s.LT;
+        int s_size = s.size();
+        int upp_x = e.x_ ; int upp_y = e.y_-1;
+        if(IS_IN_BOUNDS(upp_x, upp_y, xx, yy) && IS_NOT_VISITED(upp_x, upp_y) && IS_SMALLER(e.x_, e.y_, upp_x, upp_y) ){
+            VISIT(upp_x, upp_y);
+            s.PB(std::make_pair(upp_y, upp_x));
         }
-    }
-}
-
-inline void straight_y(int x_i, int y_i, int xx, int yy){
-
-    VISIT(x_i, y_i);
-    for(int i=1; i<yy; i++){
-        if(IS_SMALLER(x_i, i, x_i, i-1)){
-            VISIT(x_i, i);
-        } else {
-            break;
+        int dow_x = e.x_; int dow_y = e.y_+1;
+        if(IS_IN_BOUNDS(dow_x, dow_y, xx, yy) && IS_NOT_VISITED(dow_x, dow_y) && IS_SMALLER(e.x_, e.y_, dow_x, dow_y)){
+            VISIT(dow_x, dow_y);
+            s.PB(std::make_pair(dow_y, dow_x));
         }
-    }
-}
-inline void b_straight_y(int x_i, int y_i, int xx, int yy){
-
-    VISIT(x_i, y_i);
-    for(int i=yy-1; i>0; i--){
-        if(IS_SMALLER(x_i, i, x_i, i+1)){
-            VISIT(x_i, i);
-        } else {
-            break;
+        int l_x = e.x_-1; int l_y = e.y_;
+        if(IS_IN_BOUNDS(l_x, l_y, xx, yy) && IS_NOT_VISITED(l_x, l_y) && IS_SMALLER(e.x_, e.y_, l_x, l_y)){
+            VISIT(l_x, l_y);
+            s.PB(std::make_pair(l_y, l_x));
         }
-    }
-}
-
-inline void b_straight_x(int x_i, int y_i, int xx, int yy){
-
-    VISIT(x_i, y_i);
-    for(int i=xx-1; i>0; i--){
-        if(IS_SMALLER(i, y_i, i+1, y_i)){
-            VISIT(i, y_i);
-        } else {
-            break;
+        int r_x = e.x_+1; int r_y = e.y_;
+        if(IS_IN_BOUNDS(r_x, r_y, xx, yy) && IS_NOT_VISITED(r_x, r_y) && IS_SMALLER(e.x_, e.y_, r_x, r_y)){
+            VISIT(r_x, r_y);
+            s.PB(std::make_pair(r_y, r_x));
         }
+
+        if(s_size == s.size())
+            s.pop_back();
     }
 }
 
@@ -157,15 +148,15 @@ bool is_possible(int x_s, int y_s)
     //make bsf or overflow water algorithm on board
     //x dim
     for(int i=0; i<x_s; i++){
-        straight_x(i, 0, x_s, y_s);
-        b_straight_x(i, y_s, x_s, y_s);
+        pour_it_out(i, 0, x_s, y_s);
+        pour_it_out(i, y_s-1, x_s, y_s);
     }
 
-    for(int i=0; i<y_s; i++){
-        straight_y(0, i, x_s, y_s);
-        b_straight_y(x_s, i, x_s, y_s);
+    for(int i=1; i<y_s; i++){
+        pour_it_out(0, i, x_s, y_s);
+        pour_it_out(x_s-1, i, x_s, y_s);
     }
-    int cnt = count_visited(x_s, y_s);
+int cnt = count_visited(x_s, y_s);
     if(cnt < x_s*y_s)
         return false;
     else

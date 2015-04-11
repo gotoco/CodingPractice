@@ -37,8 +37,8 @@ typedef long long LL;
 #define ND second()
 #define LT back()
 
-#define P_V_B     1001
-#define P_V     1000
+#define P_V_B     31
+#define P_V     30
 
 unsigned int p_numb [P_V_B];
 
@@ -47,42 +47,56 @@ inline void clean(){
         p_numb[i] = 0;
 }
 
+//return number of minutes
+unsigned int breakfast();
+
 int main(){
 
-//        freopen("in", "r", stdin);
-//    freopen("out", "w", stdout);
-
     int TT; cin>>TT;
-
-    REP(x, TT){
+    while(1){ int x=0;
+//    REP(x, TT){
         clean();
         int plates;
         cin >> plates;
 
         REP(i, plates){
-            unsigned int c;
+            int c;
             cin >> c;
-            p_numb[i]=c;
+            p_numb[c]++;
         }
-
-    std:sort(p_numb, p_numb+plates, std::greater<int>());
-    int m = p_numb[0];
-    int t = INFINITY;
-
-    FOR(r, 1, m){
-        int move = 0;
-        for(int i=0; i<plates; i++){
-            if(p_numb[i] <= r) break;
-            move += std::ceil((double)p_numb[i]/r -1);
-        }
-        if (move + r < t)
-            t = move + r;
-    }
-
-
+        unsigned int time = breakfast();
 
         cout << "Case #" <<  x+  1 <<": ";
-        cout << t << endl;
+        cout << time << endl;
     }
 
+}
+
+
+
+unsigned int breakfast()
+{
+    unsigned int total_time = 0;
+    for(int i=P_V; i>0; i--){
+        if(p_numb[i] == 0)
+            continue;
+
+        //divide or eat!
+        if(i >= (p_numb[i] + ceil( (double)i /2) + total_time)){
+            //divide
+            total_time+=p_numb[i];
+            int a = i/2;
+            int b = i-a;
+
+            p_numb[a] += p_numb[i];
+            p_numb[b] += p_numb[i];
+        }
+        else {
+            //eat!
+            total_time += i;
+            break;
+        }
+    }
+
+    return total_time;
 }
