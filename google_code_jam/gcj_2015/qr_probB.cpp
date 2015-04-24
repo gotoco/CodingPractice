@@ -47,9 +47,28 @@ inline void clean(){
         p_numb[i] = 0;
 }
 
+//Get the minimum possible breakfast end time, given
+// P[i] is the number of panckes of diner i initially
+int f(const vector<int>& P)
+{
+    const int max_pancakes = *max_element(P.begin(), P.end());
+    int ret = max_pancakes;
+
+    for(int x = 1; x < max_pancakes; ++x){
+        int total_moves = 0;
+        for(const int Pi : P) {
+            // (Pi - 1) / x is equivalent to M(Pi),
+            // which is ceil(Pi / x) - 1
+            total_moves += (Pi - 1) / x;
+        }
+        ret = min(ret, total_moves + x);
+    }
+    return ret;
+}
+
 int main(){
 
-//        freopen("in", "r", stdin);
+//    freopen("in", "r", stdin);
 //    freopen("out", "w", stdout);
 
     int TT; cin>>TT;
@@ -58,31 +77,31 @@ int main(){
         clean();
         int plates;
         cin >> plates;
-
+        VI vi;
         REP(i, plates){
             unsigned int c;
             cin >> c;
             p_numb[i]=c;
+            vi.PB(c);
         }
-
+//        int t = f(vi);
     std:sort(p_numb, p_numb+plates, std::greater<int>());
     int m = p_numb[0];
     int t = INFINITY;
 
-    FOR(r, 1, m){
+    FOR(r, 1, m) {
         int move = 0;
-        for(int i=0; i<plates; i++){
-            if(p_numb[i] <= r) break;
-            move += std::ceil((double)p_numb[i]/r -1);
+        for (int i = 0; i < plates; i++) {
+            if (p_numb[i] <= r) break;
+            move += std::ceil((double) p_numb[i] / r - 1);
         }
         if (move + r < t)
             t = move + r;
     }
-
-
-
         cout << "Case #" <<  x+  1 <<": ";
         cout << t << endl;
     }
 
 }
+
+

@@ -37,8 +37,8 @@ typedef long long LL;
 #define ND second()
 #define LT back()
 
-//int count_standing(string ovations);
 int fast_sol(int total, string s);
+int another_sol(string s);
 
 int main() {
 
@@ -76,3 +76,14 @@ int fast_sol(int total, string s){
     return result;
 }
 
+int another_sol(string s){
+    int smax = 0, t = 0;
+    int min_invite = 0;
+
+    for(int k=0; k<s.length(); k++){
+        min_invite = max(min_invite, k-t);
+        t += (s[k]-48);
+    }
+
+    return min_invite;
+}
