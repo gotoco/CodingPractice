@@ -68,6 +68,22 @@ int main(){
 
 }
 
+
+boolean richard_win(int R, int C, int X)
+{
+    if(R*C % X != 0) return true;
+    if(X >= 7) return true;
+    int S = min(R, C);
+    int L = max(R, C);
+
+    if(X == 3 and S == 1) return true;
+    if(X == 4 and S <= 2) return true;
+    if(X == 5 and (S <= 2 or (S==3 and L==5))) return true;
+    if(X == 6 and S <= 3) return true;
+
+    return false;
+}
+
 game_winner play_game(int X, int R, int C)
 {
     //Check Bounds:

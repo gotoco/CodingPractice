@@ -6,6 +6,7 @@
 #include <string.h>
 #include <strings.h>
 #include <math.h>
+#include <cassert>
 
 //#include <ctime.h>
 #include <time.h>
@@ -43,72 +44,62 @@ typedef long long LL;
 #define _K  4
 
 int const quater[5][5] = {
-        {0, 0, 0, 0, 0},
-        {0, 1,  _I,  _J,  _K,},
-        {0, _I, -1,  _K,  -_J,},
-        {0, _J, -_K, -1,  _I,},
-        {0, _K, _J,  -_I, -1,},
+        {0,  0,  0,   0,   0,  },
+        {0,  _1, _I,  _J,  _K, },
+        {0, _I, -_1,  _K, -_J, },
+        {0, _J, -_K, -_1,  _I, },
+        {0, _K, _J,  -_I, -_1, },
 };
 
-struct R {
-    int result;
-    int contain;  //If sequence contain after reduces ijk -in binary -> 0 0 0
-};                  // 1 contain i, 2 contain ij, 3 contain ijk
 
-//cached result for function
-R static cache [2][4][5];
-
-inline void clear_cache(){
-    for(int i=0; i<2; i++)
-        for(int j=0; j<4; j++)
-            for(int k=0; k<5; k++){
-                cache[i][j][k].result = 0;
-                cache[i][j][k].contain = -1;
-            }
-
-}
-
-R search_and_multiply(int seed, string part, int search);
-
-
-
-inline int multiply(int i, int j){
-
+int multiply(int i, int j){
     if(i > 4 || i < -4 || j > 4 || j<-4){
         cout << "## ERR:  i=" << i << "  j=" << j << endl;
         throw std::invalid_argument( "received invalid value value" );
     }
-
-
-    int sgn;
-    sgn = i*j<0 ? -1 : 1;
-
+    int sgn = i*j < 0 ? -1 : 1;
     int result = quater[abs(i)][abs(j)];
 
     return sgn * result;
 }
 
-inline int transform(char a){
-    int r = a-48;
+#define M( X, Y )  multiply(X, Y)
 
-    if(r == 1) return _1;
-    else if(a == 'i') return _I;
-    else if(a == 'j') return _J;
-    else if(a == 'k') return _K;
+int power(int a, long n){
+    if(n==1) return a;
+    if(n%2 == 0) return power( M(a, a), n/2);
+    else return M(a, power(M(a,a), n-1));
 }
 
-int solution(int l, int x, string s);
+inline int transform(char a){
+    int r = a-48;
+    int sgn = r < 0 ? -1 : 1;
+    if(r == 1) return _1;
+    else if(a == 'i') return _I * sgn;
+    else if(a == 'j') return _J * sgn;
+    else if(a == 'k') return _K * sgn;
+}
+#define T( X )  transform(X)
+
+int solution(long l, long x, string s);
+
+static int get_product(long L, long X, string s);
+static int find_i_j(long L, long X, string s);
 
 int main(){
 
+    FILE *fin = freopen("large.in", "r", stdin);
+    assert( fin!=NULL );
+    FILE *fout = freopen("large.out", "w", stdout);
+
+    string sL;
     int TT; cin >>TT;
 
     REP(t, TT){
-        clear_cache();
-        int L; int X;
-        cin >> L; cin >> X;
+        long L; long X;
+        cin >> X; cin >> L;
 
-        string sL; cin >> sL;
+        cin >> sL;
 
         int result = solution(L, X, sL);
         cout << "Case #" << t+1<< ": ";
@@ -117,67 +108,47 @@ int main(){
         }else {
             cout << "YES" << endl;
         }
+        sL.clear();
     }
 
 }
 
-int solution(int L, int X, string s){
+int solution(long L, long X, string s)
+{
+    int product = get_product(L, X, s);
+    if(product != -_1)
+        return 0;
 
-    int result = _1;
+    int result = find_i_j(L, X, s);
 
-    int search = _I;
+    return result;
+}
 
-    REP(x, X){
+int get_product(long L, long X, string s)
+{
+    int r = _1;
+    for(int i=0; i<X; i++){
+        r = multiply(r, T(s[i]));
+    }
 
-        R r = search_and_multiply(result, s, search);
+    return power(r, L);
+}
 
-        result = r.result;
-
-        if(search==_I){
-            if(r.contain & 1<<_I)
-                search++;
-        }
-        if(search==_J ){
-            if(r.contain & 1<<_J)
-                search++;
-        }
-        if(search==_K ){
-            if(r.contain & 1<<_K){
-                search=0;
+int find_i_j(long L, long X, string s)
+{
+    int tmp = _1;
+    int is_i = 0, is_j = 0;
+    FOR(l, 0, L-1)
+        FOR(x, 0, X-1){
+            tmp = multiply(tmp, T(s[x]) );
+            if(!is_i and tmp == _I){
+                is_i = 1; tmp = _1;
+            }
+            else if(is_i and !is_j and tmp == _J){
+                is_j = 1;
+                return 1;
             }
         }
-    }
 
-    if(search==0 && result == _1)
-        return 1;
-
-    return 0;
-}
-
-R search_and_multiply(int seed, string part, int search)
-{
-    int sgn = seed < 0 ? 0 : 1;
-    if(cache[sgn][abs(seed)][search].result != 0)
-        return cache[sgn][abs(seed)][search];
-
-    int result = seed;
-    int contain = 0; int target = _I;
-    if(search > 1)
-        target = search;
-
-    for(int i=0; i<part.size(); i++){
-        int next = transform(part[i]);
-        result = multiply(result, next);
-
-        if(search >1 && result == target && target <= _K){
-            contain += 1<<target;
-            target++;
-            result = _1;
-        }
-    }
-
-    cache[sgn][abs(seed)][search].result = result;
-    cache[sgn][abs(seed)][search].contain = contain;
-
-    return cache[sgn][abs(seed)][search];
+    return is_i and is_j;
 }
