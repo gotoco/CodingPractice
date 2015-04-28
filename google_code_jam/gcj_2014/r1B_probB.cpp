@@ -6,8 +6,6 @@
 #include <string.h>
 #include <strings.h>
 #include <math.h>
-
-//#include <ctime.h>
 #include <time.h>
 
 using namespace std;
