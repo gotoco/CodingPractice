@@ -35,6 +35,8 @@ typedef long long LL;
 #define ST first
 #define ND second
 
+#define INF 99999999
+
 inline void clr_g(int g[50][50]){
     for(int i=0; i<50; i++)
         for(int j=0; j<50; j++)
@@ -44,6 +46,8 @@ inline void clr_g(int g[50][50]){
 string get_smallest_zip(int g[50][50], VI zips, int N, int M);
 
 int main(){
+    freopen("in", "r", stdin);
+    freopen("out", "w", stdout);
 
     int TT; cin >> TT;
 
@@ -57,13 +61,12 @@ int main(){
             vi.PB(zip);
         }
         REP(m, M){ int d1, d2; cin >> d1; cin >> d2;
-            g[d1][d2] = 1;
-            g[d2][d1] = 1;
+            g[d1-1][d2-1] = 1;
+            g[d2-1][d1-1] = 1;
         }
 
         printf("Case #%d: ", tt+1 );
-
-        cout << get_smallest_zip(g, vi, N, M) << "\n";
+        cout <<  get_smallest_zip(g, vi, N, M) << endl;
 
     }
 
@@ -73,9 +76,22 @@ int main(){
 #define visit( X )  X+=4
 #define is_v( X )   X && 4
 #define not_v( X )  X == 1
+
+int not_visited(int g[50][50], int x, int N){
+    int r = 1;
+
+    for(int i=0; i<N; i++){
+        if(g[x][i] > 1 or g[i][x] > 1){
+            r = 0; break;
+        }
+    }
+    return r;
+}
+
 string get_smallest_zip(int g[50][50], VI zips, int N, int M)
 {
-    int ss=INFINITY;  int start;
+    string r = "";
+    int ss=INF;  int start;
     for(int i=0; i<zips.size(); i++){
         if(ss>zips[i]){
             ss=zips[i];
@@ -83,15 +99,17 @@ string get_smallest_zip(int g[50][50], VI zips, int N, int M)
         }
     }
     VI s; s.PB(start);
-
+    r+= to_string(zips[start]);
     while(not s.empty()){
         int top = s.back();
-        int small = INFINITY;//search smallest not visited neighbor
+        int small = INF;//search smallest not visited neighbor
         for(int i=0;i<N; i++){
-            if( g[top][i] > 0 and not_v(g[top][i] and small>g[top][i]) )
+            if( g[top][i] > 0 and not_visited(g, i, N) and small>g[top][i])
                 small = i;
         }
-        if(small != INFINITY){
+        if(small != INF){
+            if(not_visited(g, small, N))
+                r = r + to_string(zips[small]);
             visit(g[top][small]);
             s.PB(small);
         }else{
@@ -102,4 +120,5 @@ string get_smallest_zip(int g[50][50], VI zips, int N, int M)
 
 
     }
+    return r;
 }
