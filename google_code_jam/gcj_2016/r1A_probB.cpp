@@ -54,7 +54,7 @@ typedef long long LL;
 #define OUT     "sample.out"
 #define ERR     "sample.err"
 
-_ilv sol(int tc, int N, int J);
+_ilv sol(int tc, int N);
 //debug print
 void print_v(VI v){
 fprintf(stderr, "vec:: ");
@@ -62,67 +62,51 @@ fprintf(stderr, "vec:: ");
         fprintf(stderr, "%d, ", *it);
 fprintf(stderr, "\n");
 }
-void print(long long x) {
-    while (x) {
-        printf("%lld", x % 2);
-        x /= 2;
+
+int main(){
+    //sample
+    freopen(IN,  "r", stdin);
+    freopen(OUT, "w", stdout);
+    freopen(ERR, "w", stderr);
+
+    int TT; cin >> TT;
+
+    REP(tt, TT){
+        int N;// and more
+        cin >> N;
+
+        sol(tt+1, N); //run sol
     }
+
+    return 0;
 }
 
-bool check(long long x) {
-    for (int i = 2; i <= 10; i++) {
-        bool ok = false;
-        for (int j = 2; j <= 100; j++) {
-            long long x1 = x;
-            int v = 0;
-            while (x1 > 0) {
-                v = (v * i + x1 % 2) % j;
-                x1 /= 2;
-            }
-            if (!v) {
-                ok = true;
-                break;
-            }
-        }
-        if (!ok)
-            return false;
+bool predicate(const std::vector<int>& a, const std::vector<int>& b)
+{
+    for(int i=0; i<a.size(); i++){
+        if(a[i] < b[i] )
+            return 1;
+        else if(a[i] > b[i])
+            return 0;
     }
-    print(x);
-    for (int i = 2; i <= 10; i++) {
-        bool ok = false;
-        for (int j = 2; j <= 1000; j++) {
-            long long x1 = x;
-            int v = 0;
-            while (x1 > 0) {
-                v = (v * i + x1 % 2) % j;
-                x1 /= 2;
-            }
-            if (!v) {
-                printf(" %d", j);
-                ok = true;
-                break;
-            }
+    return 0;
+}
+
+_ilv sol(int tc, int N )
+{
+    VI li(2500);
+
+    for(int i=0; i<2*N-1; i++){
+        FOR(j, 0, N-1){
+            int a; cin >> a;
+            li[a] ++;
+        }
+    }
+    printf("Case #%d: ", tc);
+    FOR(i, 0, li.size()-1){
+        if(li[i] %2 != 0){
+            printf("%d ", i);
         }
     }
     printf("\n");
-    return true;
-}
-
-int main() {
-    freopen("in",  "r", stdin);
-    freopen("out", "w", stdout);
-    freopen("err", "w", stderr);
-    printf("Case #1:\n");
-    int N, J;
-    scanf("%*d%d%d", &N, &J);
-
-    sol(N, J);
-}
-
-_ilv sol(int N, int J)
-{
-    for (long long i = (1LL << (N - 1)) + 1; cnt < J ;i += 2) {
-         if (check(i))
-             cnt += 1;
-     }
 }

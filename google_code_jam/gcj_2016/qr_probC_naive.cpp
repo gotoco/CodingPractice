@@ -62,67 +62,59 @@ fprintf(stderr, "vec:: ");
         fprintf(stderr, "%d, ", *it);
 fprintf(stderr, "\n");
 }
-void print(long long x) {
-    while (x) {
-        printf("%lld", x % 2);
-        x /= 2;
+
+int main(){
+    //sample
+    freopen(IN,  "r", stdin);
+    freopen(OUT, "w", stdout);
+    freopen(ERR, "w", stderr);
+
+    int TT; cin >> TT;
+
+    REP(tt, TT){
+        int N, J;// and more
+        cin >> N; cin >> J;
+
+        sol(tt+1, N, J); //run sol
     }
+
+    return 0;
 }
 
-bool check(long long x) {
-    for (int i = 2; i <= 10; i++) {
-        bool ok = false;
-        for (int j = 2; j <= 100; j++) {
-            long long x1 = x;
-            int v = 0;
-            while (x1 > 0) {
-                v = (v * i + x1 % 2) % j;
-                x1 /= 2;
-            }
-            if (!v) {
-                ok = true;
-                break;
-            }
-        }
-        if (!ok)
-            return false;
-    }
-    print(x);
-    for (int i = 2; i <= 10; i++) {
-        bool ok = false;
-        for (int j = 2; j <= 1000; j++) {
-            long long x1 = x;
-            int v = 0;
-            while (x1 > 0) {
-                v = (v * i + x1 % 2) % j;
-                x1 /= 2;
-            }
-            if (!v) {
-                printf(" %d", j);
-                ok = true;
-                break;
-            }
-        }
-    }
-    printf("\n");
-    return true;
+long long convertBinaryToBase(int x, int base) {
+    if (x == 0)
+        return 0;
+    return base * convertBinaryToBase(x / 2, base) + (x % 2);
 }
 
-int main() {
-    freopen("in",  "r", stdin);
-    freopen("out", "w", stdout);
-    freopen("err", "w", stderr);
-    printf("Case #1:\n");
-    int N, J;
-    scanf("%*d%d%d", &N, &J);
-
-    sol(N, J);
+long long findFactor(long long k) {
+    for (long long d = 2; d * d <= k; d++)
+        if (k % d == 0)
+            return d;
+    return 0;
 }
 
-_ilv sol(int N, int J)
+_ilv sol(int tc, int N, int J)
 {
-    for (long long i = (1LL << (N - 1)) + 1; cnt < J ;i += 2) {
-         if (check(i))
-             cnt += 1;
-     }
+    //do work
+    printf("Case #%d: \n", tc);
+    for (long long i = (1 << N-1) + 1; J > 0; i += 2) {
+        vector<long long> factors;
+        for (int base = 2; base <= 10; base++) {
+            long long x = convertBinaryToBase(i, base);
+            long long factor = findFactor(x);
+            if (!factor)
+                break;
+            factors.push_back(factor);
+        }
+        if (factors.size() < 9)
+            continue;
+
+        cout << convertBinaryToBase(i, 10);
+        for (long long factor : factors)
+            cout << " " << factor;
+        cout << endl;
+        J -= 1;
+    }
+
 }

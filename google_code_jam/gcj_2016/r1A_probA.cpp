@@ -54,7 +54,7 @@ typedef long long LL;
 #define OUT     "sample.out"
 #define ERR     "sample.err"
 
-_ilv sol(int tc, int N, int J);
+_ilv sol(int tc);
 //debug print
 void print_v(VI v){
 fprintf(stderr, "vec:: ");
@@ -62,67 +62,40 @@ fprintf(stderr, "vec:: ");
         fprintf(stderr, "%d, ", *it);
 fprintf(stderr, "\n");
 }
-void print(long long x) {
-    while (x) {
-        printf("%lld", x % 2);
-        x /= 2;
+
+int main(){
+    //sample
+    freopen(IN,  "r", stdin);
+    freopen(OUT, "w", stdout);
+    freopen(ERR, "w", stderr);
+
+    int TT; cin >> TT;
+
+    REP(tt, TT){
+
+        sol(tt+1); //run sol
     }
+
+    return 0;
 }
 
-bool check(long long x) {
-    for (int i = 2; i <= 10; i++) {
-        bool ok = false;
-        for (int j = 2; j <= 100; j++) {
-            long long x1 = x;
-            int v = 0;
-            while (x1 > 0) {
-                v = (v * i + x1 % 2) % j;
-                x1 /= 2;
-            }
-            if (!v) {
-                ok = true;
-                break;
-            }
-        }
-        if (!ok)
-            return false;
-    }
-    print(x);
-    for (int i = 2; i <= 10; i++) {
-        bool ok = false;
-        for (int j = 2; j <= 1000; j++) {
-            long long x1 = x;
-            int v = 0;
-            while (x1 > 0) {
-                v = (v * i + x1 % 2) % j;
-                x1 /= 2;
-            }
-            if (!v) {
-                printf(" %d", j);
-                ok = true;
-                break;
-            }
-        }
-    }
-    printf("\n");
-    return true;
-}
-
-int main() {
-    freopen("in",  "r", stdin);
-    freopen("out", "w", stdout);
-    freopen("err", "w", stderr);
-    printf("Case #1:\n");
-    int N, J;
-    scanf("%*d%d%d", &N, &J);
-
-    sol(N, J);
-}
-
-_ilv sol(int N, int J)
+_ilv sol(int tc )
 {
-    for (long long i = (1LL << (N - 1)) + 1; cnt < J ;i += 2) {
-         if (check(i))
-             cnt += 1;
-     }
+    string s; cin >> s;
+    vector<char> ans;
+    ans.PB(s[0]);
+    for(int i=1; i<s.size(); i++){
+        char c = s[i];
+
+        if(c >= ans.front()){
+            PF(ans, c);
+        }else{
+            ans.PB(c);
+        }
+    }
+
+    printf("Case #%d: ", tc);
+    FOREACH(it, ans)
+        printf("%c", *it);
+    printf("\n");
 }
